@@ -1,4 +1,10 @@
 "use client";
+import {
+  fieldLabel,
+  fieldControl,
+  primaryButton,
+  secondaryButton,
+} from "@/lib/styles";
 import { useState } from "react";
 import { useAvailability } from "@/hooks/useAvailability";
 import { ApiError, errorMessage } from "@/lib/api";
@@ -99,11 +105,15 @@ export function BookingForm({
   );
   return (
     <form onSubmit={submit}>
-      <fieldset disabled={busy}>
-        <div className="form-grid">
-          <label>
+      <fieldset
+        className="min-w-0 px-7 py-6 max-sm:px-[18px] max-sm:py-5"
+        disabled={busy}
+      >
+        <div className="grid grid-cols-2 gap-4 max-sm:gap-3">
+          <label className={fieldLabel}>
             Operation type
             <select
+              className={`${fieldControl} pr-7`}
               aria-label="Operation type"
               value={input.type}
               onChange={(e) =>
@@ -117,9 +127,10 @@ export function BookingForm({
               ))}
             </select>
           </label>
-          <label>
+          <label className={fieldLabel}>
             Vehicle
             <select
+              className={`${fieldControl} pr-7`}
               aria-label="Vehicle"
               required
               value={input.vehicleId}
@@ -133,9 +144,10 @@ export function BookingForm({
               ))}
             </select>
           </label>
-          <label>
+          <label className={fieldLabel}>
             Date
             <input
+              className={fieldControl}
               type="date"
               min={localDate()}
               required
@@ -143,9 +155,10 @@ export function BookingForm({
               onChange={(e) => update("date", e.target.value)}
             />
           </label>
-          <label>
+          <label className={fieldLabel}>
             Duration
             <select
+              className={`${fieldControl} pr-7`}
               aria-label="Duration"
               value={input.durationMinutes}
               onChange={(e) =>
@@ -160,22 +173,30 @@ export function BookingForm({
             </select>
           </label>
         </div>
-        <div className="slot-heading">
-          <h3>Choose a time window</h3>
-          <span>09:00 – 17:00 · Local time</span>
+        <div className="mt-[26px] mb-3 flex items-center justify-between gap-2 max-sm:flex-col max-sm:items-start">
+          <h3 className="text-[13px] font-semibold">Choose a time window</h3>
+          <span className="text-[10px] text-text-secondary">
+            09:00 – 17:00 · Local time
+          </span>
         </div>
         {availability.loading ? (
-          <p role="status" className="muted">
+          <p
+            role="status"
+            className="py-2 text-xs leading-normal text-text-secondary"
+          >
             Finding availability…
           </p>
         ) : availability.error ? (
           <div>
-            <p role="alert" className="error-text">
+            <p
+              role="alert"
+              className="py-2.5 text-xs leading-normal text-error"
+            >
               {availability.error}
             </p>
             <button
               type="button"
-              className="secondary-button"
+              className={secondaryButton}
               onClick={availability.refresh}
             >
               Retry availability
@@ -192,17 +213,18 @@ export function BookingForm({
             />
             {availability.slots.length > 0 &&
               !availability.slots.some((s) => s.available) && (
-                <p className="muted">
+                <p className="py-2 text-xs leading-normal text-text-secondary">
                   No {input.durationMinutes}-minute windows are available for
                   this vehicle.
                 </p>
               )}
           </>
         )}
-        <div className="form-notes">
-          <label>
+        <div className="mt-6 flex flex-col gap-4">
+          <label className={fieldLabel}>
             Operation title
             <input
+              className={fieldControl}
               required
               maxLength={120}
               placeholder="e.g. Prepare for afternoon pickup"
@@ -210,9 +232,13 @@ export function BookingForm({
               onChange={(e) => update("title", e.target.value)}
             />
           </label>
-          <label>
-            Notes <span className="optional">Optional</span>
+          <label className={fieldLabel}>
+            Notes{" "}
+            <span className="inline font-normal text-text-secondary">
+              Optional
+            </span>
             <textarea
+              className={`${fieldControl} resize-y`}
               rows={3}
               maxLength={1000}
               placeholder="Add handoff details or a checklist…"
@@ -232,27 +258,27 @@ export function BookingForm({
           />
         )}
         {error && (
-          <p role="alert" className="error-text">
+          <p role="alert" className="py-2.5 text-xs leading-normal text-error">
             {error}
           </p>
         )}
       </fieldset>
-      <div className="dialog-footer">
-        <span>
+      <div className="sticky bottom-0 flex items-center justify-end gap-2.5 border-t border-border bg-surface px-7 py-[18px] max-sm:flex-wrap max-sm:px-[18px] max-sm:py-3.5">
+        <span className="mr-auto text-[11px] text-text-secondary max-sm:basis-full max-sm:text-[10px]">
           {input.startTime
             ? `Selected: ${input.startTime} · ${input.durationMinutes} min`
             : "Select an available window"}
         </span>
         <button
           type="button"
-          className="secondary-button"
+          className={secondaryButton}
           disabled={busy}
           onClick={onClose}
         >
           Cancel
         </button>
         <button
-          className="primary-button"
+          className={`${primaryButton} max-sm:flex-1`}
           disabled={
             busy ||
             availability.loading ||

@@ -82,6 +82,17 @@ Verified on October 9, 2026 after Swagger was requested:
 - Running `npm run swagger:generate` while the development server was active preserved an existing in-memory booking, confirming the isolated documentation build does not restart or interfere with the API.
 - Backend build and both workspace type checks passed. Temporary verification bookings were deleted.
 
+## Tailwind migration
+
+Verified on October 9, 2026 with Tailwind CSS and `@tailwindcss/postcss` 4.3.3:
+
+- Every original theme token retains its name and value. The stylesheet contains only the Tailwind import and theme definitions; component selectors, custom media queries, and custom keyframes were removed.
+- The frontend production build and both workspace type checks passed.
+- Chromium checks passed against both production and development servers: actual rendered theme colors, operation accents, desktop card layout, filters, selected/disabled slots, keyboard focus, dialog dismissal, and reduced-motion behavior.
+- At 768px and 390px widths, responsive grids and dialogs fit the viewport without horizontal overflow; mobile filters stack and time windows use two columns. Desktop and mobile screenshots were visually inspected.
+- Real API create, edit, delete, and stale-availability conflict recovery passed through the frontend proxy. The browser observed successful GET/POST/PATCH/DELETE requests and a 409 response with three selectable alternatives. No browser runtime exceptions occurred. Temporary bookings were deleted.
+- Development checks used the `localhost` hostname. Next.js blocks development resources requested from the unconfigured `127.0.0.1` origin; production checks passed on that address.
+
 ## Verification limits
 
-No production deployment, GitHub push, environment publication, fresh-task snapshot restoration, cross-timezone behavior, or multi-process concurrency was verified. Persistence, authentication, calendar sync, and notifications are intentionally outside scope. Headless browser checks do not replace exhaustive accessibility or cross-browser audits.
+No production deployment, environment publication, fresh-task snapshot restoration, cross-timezone behavior, or multi-process concurrency was verified. Persistence, authentication, calendar sync, and notifications are intentionally outside scope. Headless browser checks do not replace exhaustive accessibility or cross-browser audits.

@@ -1,3 +1,4 @@
+import { fieldLabel, fieldControl } from "@/lib/styles";
 import type { Filters, Vehicle } from "@/types";
 import { BOOKING_TYPES, TYPE_LABELS, vehicleLabel } from "@/types";
 export function ScheduleToolbar({
@@ -10,10 +11,14 @@ export function ScheduleToolbar({
   vehicles: Vehicle[];
 }) {
   return (
-    <section className="toolbar" aria-label="Schedule filters">
-      <label>
+    <section
+      className="grid grid-cols-[1fr_1.15fr_1.15fr_auto] gap-[18px] rounded-panel border border-border bg-toolbar p-[22px] max-lg:grid-cols-3 max-sm:grid-cols-1 max-sm:gap-3 max-sm:p-4"
+      aria-label="Schedule filters"
+    >
+      <label className={fieldLabel}>
         Date
         <input
+          className={fieldControl}
           aria-label="Schedule date"
           type="date"
           value={filters.date}
@@ -22,9 +27,10 @@ export function ScheduleToolbar({
           }}
         />
       </label>
-      <label>
+      <label className={fieldLabel}>
         Vehicle
         <select
+          className={`${fieldControl} pr-7`}
           aria-label="Vehicle"
           value={filters.vehicleId}
           onChange={(e) => onChange({ ...filters, vehicleId: e.target.value })}
@@ -38,9 +44,10 @@ export function ScheduleToolbar({
           ))}
         </select>
       </label>
-      <label>
+      <label className={fieldLabel}>
         Operation type
         <select
+          className={`${fieldControl} pr-7`}
           aria-label="Operation type"
           value={filters.type}
           onChange={(e) => onChange({ ...filters, type: e.target.value })}
@@ -53,10 +60,13 @@ export function ScheduleToolbar({
           ))}
         </select>
       </label>
-      <div className="working-hours">
-        <span>◷</span>
+      <div className="ml-3 flex items-center gap-3 self-center border-l border-border-strong pl-7 text-[11px] text-text-secondary max-lg:hidden">
+        <span className="text-[23px]">◷</span>
         <div>
-          Working hours<strong>09:00 – 17:00</strong>
+          Working hours
+          <strong className="mt-0.5 block text-[13px] font-medium text-text-primary">
+            09:00 – 17:00
+          </strong>
         </div>
       </div>
     </section>

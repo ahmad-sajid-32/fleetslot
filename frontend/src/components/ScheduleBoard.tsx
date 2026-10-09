@@ -1,3 +1,4 @@
+import { emptyPanel } from "@/lib/styles";
 import { VehicleSchedule } from "./VehicleSchedule";
 import type { Vehicle, Booking } from "@/types";
 export function ScheduleBoard({
@@ -13,14 +14,18 @@ export function ScheduleBoard({
 }) {
   if (!bookings.length)
     return (
-      <div className="empty-state">
-        <span aria-hidden="true">▤</span>
-        <h2>No operations scheduled for this date.</h2>
+      <div className={emptyPanel}>
+        <span className="mb-3 block text-[40px] text-brand" aria-hidden="true">
+          ▤
+        </span>
+        <h2 className="mb-2 text-[17px] font-medium text-text-primary">
+          No operations scheduled for this date.
+        </h2>
         <p>Choose another date or schedule your next vehicle operation.</p>
       </div>
     );
   return (
-    <div className="schedule-board">
+    <div className="flex flex-col gap-7">
       {vehicles
         .filter((v) => bookings.some((b) => b.vehicleId === v.id))
         .map((v) => (

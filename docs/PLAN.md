@@ -28,7 +28,7 @@ flowchart TD
 - `BookingsModule` orchestrates complete candidate validation and synchronous create/update/delete.
 - Constants are centralized in `backend/src/common/booking.constants.ts`.
 - DTOs use class-validator/class-transformer, a strict global ValidationPipe, and Swagger’s mapped-type PartialType for updates so validation and OpenAPI metadata are both inherited. Explicit nulls are rejected; unknown properties cannot slip into storage.
-- The UI uses a central API module and shared types, `useFleetScheduler` and `useAvailability`, focused components, and one token-driven stylesheet. AbortControllers prevent obsolete requests from replacing current filter/availability results.
+- The UI uses a central API module and shared types, `useFleetScheduler` and `useAvailability`, focused components, and Tailwind utility styling backed by the original theme tokens. AbortControllers prevent obsolete requests from replacing current filter/availability results.
 - The shared create/edit form uses generated windows, displays authoritative 409 alternatives, and never silently resubmits. Native dialog provides focus containment, Escape handling, and focus restoration; closing is disabled during a save. Deletion requires confirmation.
 
 ## Delivery order
@@ -56,6 +56,14 @@ flowchart TD
 - `npm run swagger:generate` compiles into an isolated, ignored `backend/.swagger-build` folder and writes the root `swagger.yaml` without listening on a port or disturbing the running development build; `npm run swagger:check` detects differences from the current route/DTO metadata. Examples are fixed so generation is deterministic.
 - UpdateBookingDto now imports PartialType from `@nestjs/swagger`, which also inherits the underlying mapped-types validation/transform metadata. `skipNullProperties: false` remains enabled, and full merged-candidate validation remains in BookingsService.
 
+## Tailwind migration
+
+- At the owner’s request, Tailwind CSS 4.3.3 and the matching PostCSS plugin replace the custom component stylesheet. This was the stable npm `latest` release when installed.
+- Original token names and values are preserved in the CSS-first `@theme static` definition. Semantic color, layout, radius, and shadow utilities reference those tokens. Only Tailwind setup and theme declarations remain in the stylesheet.
+- Every frontend component now uses utilities, including responsive grids, native-dialog backdrop, hover/focus states, selected/disabled slots, notices, and reduced motion. Shared controls use plain reusable utility strings, without a component framework or `@apply` rules.
+- Responsive thresholds retain the original 640/1000/1360px layout design. Operation color maps contain complete utility names for reliable build-time detection.
+- API functions, hooks, validation, and scheduling behavior are unchanged by the styling migration.
+
 ## Remaining constraints
 
-In-memory state and single-process atomicity are intentional. Local dates assume compatible operator/server local timezones. Publication, GitHub push, cross-task snapshot restoration, and deployment are outside the checks performed here.
+In-memory state and single-process atomicity are intentional. Local dates assume compatible operator/server local timezones. Environment publication, cross-task snapshot restoration, and deployment are outside the checks performed here.

@@ -29,6 +29,14 @@ To run the production builds, start `npm run start -w backend` and `npm run star
 
 Default settings require no env files. `backend/.env.example` documents `PORT` and `FRONTEND_ORIGIN` (set these in the shell); `frontend/.env.example` documents the server-side `API_URL` override (Next.js also reads `.env.local`). The frontend proxies `/api/*` to the backend so browser requests stay on the frontend origin. Backend CORS allows the configured frontend origin.
 
+## Frontend styling and API integration
+
+The frontend uses Tailwind CSS **4.3.3**, the latest stable release checked on October 9, 2026, with the matching `@tailwindcss/postcss` plugin. `frontend/postcss.config.mjs` configures the build. The CSS entry file, `frontend/src/styles/styles.css`, contains only the Tailwind import and theme definitions; component styling, responsive layouts, focus/disabled/selected states, and reduced-motion behavior use utilities.
+
+All original color token names and values are preserved in `@theme static`. Use semantic utilities such as `bg-brand`, `text-text-secondary`, `border-border`, and `bg-cleaning/9`. Repeated control utilities live in `frontend/src/lib/styles.ts`. Operation colors use complete, statically declared utility names so all variants are included in production builds. No separate Tailwind JavaScript configuration or component CSS is needed.
+
+**API integration is implemented.** `frontend/src/lib/api.ts` calls the real NestJS REST endpoints through the same-origin `/api` proxy in `frontend/next.config.ts`. `useFleetScheduler` loads vehicles/bookings and performs create, update, and delete requests. `useAvailability` fetches current windows, including edit exclusion; authoritative 409 responses drive selectable conflict alternatives in the dialog. Backend storage remains in memory and resets on restart.
+
 ## Swagger / OpenAPI
 
 The repository-root [`swagger.yaml`](swagger.yaml) is an OpenAPI 3.0 document generated from the NestJS controllers and DTOs. Start the backend with `npm run dev`; on either the API port (3001) or frontend port (3000), use:

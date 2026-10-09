@@ -1,4 +1,5 @@
 "use client";
+import { buttonStyles, eyebrow } from "@/lib/styles";
 import { useEffect, useRef, useState } from "react";
 import type { Booking, Vehicle, CreateBookingInput } from "@/types";
 import { BookingForm } from "./BookingForm";
@@ -25,7 +26,7 @@ export function BookingDialog({
   return (
     <dialog
       ref={ref}
-      className="booking-dialog"
+      className="m-auto max-h-[calc(100dvh-60px)] w-[760px] max-w-[calc(100vw-40px)] overflow-auto rounded-2xl border border-border bg-surface p-0 text-text-primary shadow-modal backdrop:bg-backdrop backdrop:backdrop-blur-[3px] max-sm:max-h-[calc(100dvh-12px)] max-sm:w-full max-sm:max-w-[calc(100vw-12px)] max-sm:rounded-panel"
       aria-labelledby="dialog-title"
       onCancel={(e) => {
         e.preventDefault();
@@ -44,17 +45,22 @@ export function BookingDialog({
         }
       }}
     >
-      <div className="dialog-header">
+      <div className="flex justify-between border-b border-border px-7 pt-[25px] pb-5 max-sm:px-[18px] max-sm:pt-5">
         <div>
-          <span className="eyebrow">VEHICLE OPERATIONS</span>
-          <h2 id="dialog-title">
+          <span className={eyebrow}>VEHICLE OPERATIONS</span>
+          <h2
+            id="dialog-title"
+            className="my-[5px] text-[25px] tracking-[-0.7px] max-sm:text-[22px]"
+          >
             {booking ? "Edit operation" : "Schedule an operation"}
           </h2>
-          <p>Find the right window. Keep your fleet moving.</p>
+          <p className="text-xs leading-normal text-text-secondary">
+            Find the right window. Keep your fleet moving.
+          </p>
         </div>
         <button
           aria-label="Close dialog"
-          className="icon-button"
+          className={`${buttonStyles} size-8 shrink-0 rounded-full bg-background text-[22px] text-text-secondary`}
           disabled={busy}
           onClick={onClose}
         >
