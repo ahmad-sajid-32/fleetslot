@@ -8,7 +8,9 @@
   "scripts": {
     "dev": "concurrently -k -n api,web \"npm run dev -w backend\" \"npm run dev -w frontend\"",
     "build": "npm run build -w backend && npm run build -w frontend",
-    "typecheck": "npm run typecheck --workspaces"
+    "typecheck": "npm run typecheck --workspaces",
+    "swagger:generate": "npm run swagger:generate -w backend",
+    "swagger:check": "npm run swagger:check -w backend"
   },
   "devDependencies": {
     "concurrently": "^9.2.1"

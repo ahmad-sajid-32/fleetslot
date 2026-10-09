@@ -68,6 +68,20 @@ The final browser workflow also passed against the production servers. A separat
 
 The environment draft saved the complete `install_script` (frozen dependency installation, builds, and type checks) and `start_skill` (existing checkout, root development command, restart behavior, and functional readiness checks). Draft saving is confirmed; publication is a separate user action in environment settings.
 
+## Swagger / OpenAPI addition
+
+Verified on October 9, 2026 after Swagger was requested:
+
+- Generated `swagger.yaml` passes OpenAPI 3.0 schema validation and includes all seven operations.
+- All five HTTP 200 operations include explicit JSON examples. All five request examples and 34 success/error response examples validate against their documented schemas.
+- Live success/error responses validate against the same models, including both 409 variants and the empty 204 response. Create required fields, PATCH optional fields, duration constraints, filters, and edit-exclusion parameters are documented.
+- PATCH retains partial/empty update support, preserves omitted fields, permits clearing notes with an empty string, and rejects explicit nulls, invalid durations, and unknown fields.
+- Live `/api/swagger.json` and `/api/swagger.yaml` match the checked-in document on both API and frontend ports.
+- Chromium rendered all seven Swagger UI operations and executed GET vehicles successfully with HTTP 200 through both ports; no browser runtime errors occurred.
+- `npm run swagger:check` passes for the current file. Deliberately stale content caused the check to fail, and restoring the file returned it to passing.
+- Running `npm run swagger:generate` while the development server was active preserved an existing in-memory booking, confirming the isolated documentation build does not restart or interfere with the API.
+- Backend build and both workspace type checks passed. Temporary verification bookings were deleted.
+
 ## Verification limits
 
 No production deployment, GitHub push, environment publication, fresh-task snapshot restoration, cross-timezone behavior, or multi-process concurrency was verified. Persistence, authentication, calendar sync, and notifications are intentionally outside scope. Headless browser checks do not replace exhaustive accessibility or cross-browser audits.

@@ -4,8 +4,9 @@ import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module.js';
 import { fail } from './common/errors.js';
 import { ApiExceptionFilter } from './common/api-exception.filter.js';
+import { API_PREFIX, setupSwagger } from './swagger.js';
 const app = await NestFactory.create(AppModule);
-app.setGlobalPrefix('api');
+app.setGlobalPrefix(API_PREFIX);
 app.useGlobalFilters(new ApiExceptionFilter());
 app.enableCors({
   origin: process.env.FRONTEND_ORIGIN ?? 'http://localhost:3000',
@@ -23,4 +24,5 @@ app.useGlobalPipes(
       ),
   }),
 );
+setupSwagger(app);
 await app.listen(process.env.PORT ?? 3001, '0.0.0.0');

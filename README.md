@@ -29,6 +29,29 @@ To run the production builds, start `npm run start -w backend` and `npm run star
 
 Default settings require no env files. `backend/.env.example` documents `PORT` and `FRONTEND_ORIGIN` (set these in the shell); `frontend/.env.example` documents the server-side `API_URL` override (Next.js also reads `.env.local`). The frontend proxies `/api/*` to the backend so browser requests stay on the frontend origin. Backend CORS allows the configured frontend origin.
 
+## Swagger / OpenAPI
+
+The repository-root [`swagger.yaml`](swagger.yaml) is an OpenAPI 3.0 document generated from the NestJS controllers and DTOs. Start the backend with `npm run dev`; on either the API port (3001) or frontend port (3000), use:
+
+| Path                | Purpose                                      |
+| ------------------- | -------------------------------------------- |
+| `/api/docs`         | Interactive Swagger UI, including Try it out |
+| `/api/swagger.yaml` | Live YAML document                           |
+| `/api/swagger.json` | Live JSON document                           |
+
+All seven API operations, request/query models, response models, and domain error codes are documented, including both kinds of 409 and conflict alternative windows. Example dates are illustrative; replace them with today or a future local date when scheduling. Try it out changes the same in-memory bookings as the dashboard.
+
+After changing API routes or DTO metadata, run these commands from the repository root:
+
+```sh
+npm run swagger:generate  # build the backend and update swagger.yaml
+npm run swagger:check     # build and fail if the checked-in YAML is stale
+```
+
+Every HTTP 200 operation has an explicit JSON example; creation includes a 201 example, and deletion documents a bodyless 204. Create and PATCH bodies include selectable request examples.
+
+Both commands compile into the ignored `backend/.swagger-build` directory and create the API document without opening a listening port, so they can run alongside the development server. Commit the generated file alongside API changes. Server startup serves live documentation from the same metadata without rewriting the checked-in YAML.
+
 ## Scheduling rules
 
 - Local calendar dates, today or later; workday 09:00–17:00.
