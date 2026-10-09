@@ -118,6 +118,14 @@ Verified on October 9, 2026 after adding four vehicles and two weeks of bookings
 - Live HTTP requests through the frontend proxy returned eight vehicles and 80 bookings. Each of the 14 date filters returned records. Availability marked each new vehicle's booked window unavailable and made it available when excluding that booking for editing.
 - Chromium displayed nine operations tomorrow across eight vehicle groups, filtered the Toyota successfully, restored the full board, and displayed four bookings on day 14 without runtime errors.
 
+## Bottom-right toasts
+
+Verified on October 9, 2026 after pulling the owner's Today-button and header changes:
+
+- Frontend production build and type check passed; the owner's changes remained intact.
+- Chromium exercised real create/edit/delete requests and confirmed three independently stacked success toasts, with no inline notice or schedule layout shift.
+- Desktop and 390px mobile checks confirmed bottom-right placement within the viewport, five-second dismissal, hover/focus timer pauses, and manual dismissal with focus restoration. No browser runtime errors occurred; temporary bookings were removed.
+
 ## Verification limits
 
 No production deployment, environment publication, fresh-task snapshot restoration, cross-timezone behavior, or multi-process concurrency was verified. Persistence, authentication, calendar sync, and notifications are intentionally outside scope. Headless browser checks do not replace exhaustive accessibility or cross-browser audits.

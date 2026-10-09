@@ -5,11 +5,9 @@ import {
   CarProfileIcon,
   CaretLeftIcon,
   CaretRightIcon,
-  CheckCircleIcon,
   ClockIcon,
   PlusIcon,
   WarningCircleIcon,
-  XIcon,
 } from "@phosphor-icons/react";
 import { useState } from "react";
 import {
@@ -27,6 +25,7 @@ import { ScheduleToolbar } from "./ScheduleToolbar";
 import { ScheduleBoard } from "./ScheduleBoard";
 import { BookingDialog } from "./BookingDialog";
 import { DeleteBookingDialog } from "./DeleteBookingDialog";
+import { ToastNotifications } from "./ToastNotifications";
 import { ScheduleSkeleton, Spinner } from "./LoadingStates";
 
 export function FleetScheduler() {
@@ -122,22 +121,6 @@ export function FleetScheduler() {
             <span className="font-semibold tabular-nums">09:00 – 17:00</span>
           </span>
         </div>
-        {fleet.notice && (
-          <div
-            role="status"
-            className="mb-5 flex items-center gap-3 rounded-xl border border-success-border bg-success-surface py-2 pr-2 pl-4 text-sm text-brand"
-          >
-            <CheckCircleIcon size={20} weight="fill" aria-hidden="true" />
-            <span className="flex-1">{fleet.notice}</span>
-            <button
-              className={iconButton}
-              aria-label="Dismiss notification"
-              onClick={() => fleet.setNotice("")}
-            >
-              <XIcon size={18} aria-hidden="true" />
-            </button>
-          </div>
-        )}
         <section
           id="schedule"
           aria-label="Daily schedule"
@@ -267,6 +250,10 @@ export function FleetScheduler() {
           <span>Demo data · Changes reset on server restart</span>
         </footer>
       </main>
+      <ToastNotifications
+        toasts={fleet.toasts}
+        onDismiss={fleet.dismissToast}
+      />
       {dialog && (
         <BookingDialog
           booking={dialog.booking}

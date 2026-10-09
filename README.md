@@ -39,6 +39,8 @@ All original color token names and values are preserved in `@theme static`. Use 
 
 The redesigned workspace groups compact operation rows by vehicle, with previous/next-day controls, a Today shortcut, refresh, and clearable filters. DM Sans is served locally through `next/font/local` from the installed Fontsource package. Phosphor provides the interface icons. Both additions build without a runtime font or icon CDN.
 
+Successful scheduling, editing, and deletion show stacked toasts in the bottom right without moving the schedule. Each toast has a close button and dismisses after five seconds; its timer pauses while hovered, focused, or the browser tab is hidden. Messages use the existing success colors and respect reduced motion. Request errors remain beside the relevant form or confirmation action.
+
 Board and availability requests display skeletons; saves and deletions show progress and block duplicate submissions. The shared native dialog locks background scrolling, wraps keyboard focus, and restores focus on dismissal. Deletion requires a separate confirmation showing the operation, vehicle, date, and time, with initial focus on **Keep operation** and an inline retryable error if the request fails. Scheduling dialogs keep their header and actions visible while the form body scrolls. Motion respects the system reduced-motion setting.
 
 ## Swagger / OpenAPI
