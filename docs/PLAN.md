@@ -74,6 +74,12 @@ The owner requested a redesign using the installed `Leonxlnx/taste-skill` collec
 - Shared native dialogs make the background inert and prevent background scrolling. Explicit Tab/Shift+Tab wrapping, focus restoration, reduced motion, independent form scrolling, and disabled pending controls support keyboard and mobile use.
 - Deletion is managed above the schedule board so a board refresh cannot destroy its pending/error state. Confirmation includes the exact record details, defaults focus to cancellation, ignores backdrop clicks, and keeps failures open for retry. Successful deletion returns focus to the stable scheduling action.
 
+## Expanded demo data
+
+- Added four active demo vehicles: Toyota Corolla, Hyundai Tucson, Kia Sportage, and BMW 320i, preserving all original vehicle IDs and bookings.
+- The seed now contains 80 bookings: seven original records and 73 generated records across tomorrow through day 14. All four new vehicles appear on the default tomorrow board.
+- A fixed random seed produces varied but reproducible schedules using realistic operation templates. Dates remain relative to backend startup. Candidate starts are checked against existing bookings and the shared scheduling constants; inactive vehicles receive no additional work.
+
 ## Remaining constraints
 
 In-memory state and single-process atomicity are intentional. Local dates assume compatible operator/server local timezones. Environment publication, cross-task snapshot restoration, and deployment are outside the checks performed here.

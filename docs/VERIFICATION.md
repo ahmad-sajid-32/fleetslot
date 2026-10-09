@@ -108,6 +108,16 @@ Verified on October 9, 2026 using Chromium against both development and producti
 
 Browser checks identified and corrected native-dialog Tab wrapping, narrow operation-row overflow, and form scrolling that could place a focused field under the action bar.
 
+## Expanded demo data
+
+Verified on October 9, 2026 after adding four vehicles and two weeks of bookings:
+
+- Backend build and type check passed.
+- Seed integrity checks confirmed eight unique vehicle IDs/plates, 80 unique booking IDs, all five operation types, valid duration increments and working hours, and zero same-vehicle overlaps. Every date from tomorrow through day 14 has bookings. Repeated seeding reproduces the same schedule apart from timestamps.
+- All four new vehicles have bookings tomorrow. The inactive Ford retains only its original workshop record. These date-relative checks also passed with `TZ=Asia/Karachi`.
+- Live HTTP requests through the frontend proxy returned eight vehicles and 80 bookings. Each of the 14 date filters returned records. Availability marked each new vehicle's booked window unavailable and made it available when excluding that booking for editing.
+- Chromium displayed nine operations tomorrow across eight vehicle groups, filtered the Toyota successfully, restored the full board, and displayed four bookings on day 14 without runtime errors.
+
 ## Verification limits
 
 No production deployment, environment publication, fresh-task snapshot restoration, cross-timezone behavior, or multi-process concurrency was verified. Persistence, authentication, calendar sync, and notifications are intentionally outside scope. Headless browser checks do not replace exhaustive accessibility or cross-browser audits.

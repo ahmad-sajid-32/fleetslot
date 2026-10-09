@@ -73,7 +73,9 @@ Both commands compile into the ignored `backend/.swagger-build` directory and cr
 - Conflicts return up to three alternatives with the same date, vehicle, and duration: later windows ascending, then earlier windows descending.
 - Inactive vehicles retain existing bookings but cannot be scheduled. Edit availability excludes the current booking; PATCH validates the entire merged candidate.
 
-Four fictional vehicles and seven bookings are seeded for tomorrow and the following day. The dashboard opens tomorrow. All demo records and plates are fictional.
+Eight fictional vehicles and 80 bookings are seeded across the next 14 days, starting tomorrow. The fleet includes a Toyota Corolla, Hyundai Tucson, Kia Sportage, and BMW 320i alongside the original four cars. The dashboard opens tomorrow with nine operations across all eight vehicles. All demo records and plates are fictional.
+
+The original seven bookings are retained; 73 additional bookings use a seeded random generator to vary vehicles, operation types, durations, and available start times. The pattern is reproducible on restart, with dates moving relative to the server's current local day. Generated bookings respect working hours, duration increments, and overlap rules. The inactive Ford retains its original workshop booking and receives no new bookings.
 
 ## API reference
 
@@ -109,7 +111,7 @@ Error codes: `VALIDATION_ERROR`, `PAST_DATE`, `INVALID_SLOT`, `INVALID_DURATION`
 
 ## Verify the workflow
 
-1. Open the dashboard: tomorrow shows five operations grouped across four vehicles, including the inactive Ford's existing booking.
+1. Open the dashboard: tomorrow shows nine operations grouped across eight vehicles, including the inactive Ford's existing booking. Navigate through the next two weeks to see bookings on every day.
 2. Filter by Tesla and Cleaning; only the interior cleaning operation remains. Restore all filters.
 3. Schedule an operation: change vehicle/date/duration and check that windows refresh, occupied windows remain visible and disabled, and inactive vehicles are disabled.
 4. Create a Jeep inspection at 10:00 tomorrow, when Tesla cleaning is also scheduled. This is allowed because the vehicles differ.
