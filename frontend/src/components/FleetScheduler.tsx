@@ -156,6 +156,15 @@ export function FleetScheduler() {
             </div>
             <div className="flex items-center gap-1 max-sm:w-full">
               <button
+                className={`${buttonStyles} min-h-11 rounded-lg px-3 text-sm font-medium enabled:hover:bg-background`}
+                onClick={() =>
+                  fleet.setFilters({ ...fleet.filters, date: localDate() })
+                }
+              >
+                Today
+              </button>
+              <span className="mx-2 h-5 w-px bg-border" aria-hidden="true" />
+              <button
                 className={iconButton}
                 disabled={
                   !fleet.filters.date || !shiftDate(fleet.filters.date, -1)
@@ -169,14 +178,6 @@ export function FleetScheduler() {
                 }
               >
                 <CaretLeftIcon size={18} aria-hidden="true" />
-              </button>
-              <button
-                className={`${buttonStyles} min-h-11 rounded-lg px-3 text-sm font-medium enabled:hover:bg-background`}
-                onClick={() =>
-                  fleet.setFilters({ ...fleet.filters, date: localDate() })
-                }
-              >
-                Today
               </button>
               <button
                 className={iconButton}

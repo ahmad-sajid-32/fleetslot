@@ -25,16 +25,6 @@ export function Header() {
             className="h-6 w-px bg-border max-sm:hidden"
             aria-hidden="true"
           />
-          <nav aria-label="Main navigation" className="max-sm:hidden">
-            <a
-              href="#schedule"
-              aria-current="page"
-              className={`${focusStyles} inline-flex items-center gap-2 rounded-lg bg-selected px-3 py-2 text-sm font-semibold text-brand`}
-            >
-              <CalendarDotsIcon size={18} aria-hidden="true" />
-              Schedule
-            </a>
-          </nav>
         </div>
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-2 text-xs text-text-primary/70 max-sm:hidden">
