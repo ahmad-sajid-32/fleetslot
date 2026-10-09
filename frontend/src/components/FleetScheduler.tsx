@@ -1,165 +1,269 @@
 "use client";
 import {
+  ArrowClockwiseIcon,
+  CalendarDotsIcon,
+  CarProfileIcon,
+  CaretLeftIcon,
+  CaretRightIcon,
+  CheckCircleIcon,
+  ClockIcon,
+  PlusIcon,
+  WarningCircleIcon,
+  XIcon,
+} from "@phosphor-icons/react";
+import { useState } from "react";
+import {
   buttonStyles,
   primaryButton,
   secondaryButton,
-  eyebrow,
-  statusDot,
-  emptyPanel,
+  iconButton,
+  skeleton,
 } from "@/lib/styles";
-import { useState } from "react";
 import { useFleetScheduler } from "@/hooks/useFleetScheduler";
-import { dateLabel } from "@/lib/date";
+import { dateLabel, localDate, shiftDate } from "@/lib/date";
 import type { Booking } from "@/types";
 import { Header } from "./Header";
 import { ScheduleToolbar } from "./ScheduleToolbar";
 import { ScheduleBoard } from "./ScheduleBoard";
 import { BookingDialog } from "./BookingDialog";
+import { DeleteBookingDialog } from "./DeleteBookingDialog";
+import { ScheduleSkeleton, Spinner } from "./LoadingStates";
+
 export function FleetScheduler() {
-  const fleet = useFleetScheduler(),
-    [dialog, setDialog] = useState<{ booking?: Booking } | null>(null);
+  const fleet = useFleetScheduler();
+  const [dialog, setDialog] = useState<{ booking?: Booking } | null>(null);
+  const [deleting, setDeleting] = useState<Booking | null>(null);
+  const filtered = !!(fleet.filters.vehicleId || fleet.filters.type);
+  const resetFilters = () =>
+    fleet.setFilters({ ...fleet.filters, vehicleId: "", type: "" });
   const totalMinutes = fleet.bookings.reduce(
     (sum, b) => sum + b.durationMinutes,
     0,
   );
+  const metrics = [
+    {
+      label: "Scheduled operations",
+      value: fleet.bookings.length,
+      Icon: CalendarDotsIcon,
+    },
+    {
+      label: "Vehicles on the board",
+      value: new Set(fleet.bookings.map((b) => b.vehicleId)).size,
+      Icon: CarProfileIcon,
+    },
+    {
+      label: "Planned operation time",
+      value: `${(totalMinutes / 60).toLocaleString("en-US", { maximumFractionDigits: 1 })} hrs`,
+      Icon: ClockIcon,
+    },
+  ];
   return (
-    <>
+    <div className="min-h-dvh">
       <Header />
-      <main className="mx-auto max-w-workspace pt-11 pb-6 max-xl:mx-8 max-sm:mx-0 max-sm:px-5 max-sm:pt-7 max-sm:pb-5">
-        <div className="mb-[30px] flex items-center justify-between gap-6 max-sm:flex-col max-sm:items-start max-sm:gap-[18px]">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="mx-auto max-w-workspace px-6 pt-10 pb-6 outline-none max-sm:px-4 max-sm:pt-7"
+      >
+        <div className="mb-8 flex items-end justify-between gap-6 max-sm:flex-col max-sm:items-stretch max-sm:gap-5">
           <div>
-            <span className={eyebrow}>YOUR FLEET, IN SYNC</span>
-            <h1 className="mt-[7px] mb-2 text-[38px] leading-[1.2] font-semibold tracking-[-1.5px] max-sm:text-[32px]">
-              Fleet Operations<span className="text-brand">.</span>
+            <p className="mb-2 flex items-center gap-2 text-xs font-medium text-brand">
+              <span className="h-px w-5 bg-brand" aria-hidden="true" />
+              Your fleet, in sync
+            </p>
+            <h1 className="text-4xl font-semibold tracking-[-0.045em] text-balance max-sm:text-3xl">
+              Fleet operations<span className="text-brand">.</span>
             </h1>
-            <p className="text-sm leading-normal text-text-secondary max-sm:text-xs">
-              Coordinate handoffs, turnaround work, and everything in between.
+            <p className="mt-3 max-w-lg text-sm leading-relaxed text-text-primary/65">
+              A clear view of every handoff, inspection, and service.
             </p>
           </div>
           <button
-            className={`${primaryButton} max-sm:w-full`}
+            id="schedule-operation"
+            className={primaryButton}
             onClick={() => setDialog({})}
-            disabled={!fleet.vehicles.length}
+            disabled={!fleet.vehicles.some((v) => v.active)}
           >
-            <span aria-hidden="true" className="text-[21px] leading-none">
-              ＋
-            </span>{" "}
-            Schedule Operation
+            <PlusIcon size={18} weight="bold" aria-hidden="true" />
+            Schedule operation
           </button>
         </div>
-        <div className="mb-6 grid grid-cols-[1fr_1fr_1fr_auto] gap-6 rounded-panel border border-border bg-surface p-6 shadow-card max-xl:gap-4 max-lg:grid-cols-3 max-sm:gap-2 max-sm:px-2.5 max-sm:py-4">
-          <div className="flex items-center gap-3.5 border-border not-first:border-l not-first:pl-6 max-xl:not-first:pl-4 max-sm:gap-[5px] max-sm:not-first:pl-2">
-            <span className="grid size-[39px] shrink-0 place-items-center rounded-[10px] bg-background text-[23px] text-brand max-sm:hidden">
-              ▤
-            </span>
-            <div>
-              <strong className="block text-2xl leading-[1.2] font-semibold tracking-[-0.7px] max-sm:text-[22px]">
-                {fleet.loading ? "—" : fleet.bookings.length}
-              </strong>
-              <span className="mt-[5px] block text-[11px] text-text-secondary max-sm:text-[9px]">
-                Scheduled operations
+        <div className="mb-8 flex flex-wrap items-center gap-x-10 gap-y-5 border-y border-border py-5 max-sm:gap-x-5">
+          {metrics.map(({ label, value, Icon }) => (
+            <div
+              key={label}
+              className="flex items-center gap-3 max-sm:flex-1 max-sm:items-start"
+            >
+              <span className="grid size-10 place-items-center rounded-xl bg-icon-surface text-brand max-sm:hidden">
+                <Icon size={21} aria-hidden="true" />
               </span>
+              <div>
+                <div className="text-2xl leading-tight font-semibold tracking-tight tabular-nums">
+                  {fleet.loading ? (
+                    <span
+                      aria-label="Loading"
+                      className={`${skeleton} my-0.5 block h-6 w-12`}
+                    />
+                  ) : fleet.error ? (
+                    <span aria-label="Unavailable">–</span>
+                  ) : (
+                    value
+                  )}
+                </div>
+                <p className="mt-1 text-xs text-text-primary/65 max-sm:text-[11px]">
+                  {label}
+                </p>
+              </div>
             </div>
-          </div>
-          <div className="flex items-center gap-3.5 border-border not-first:border-l not-first:pl-6 max-xl:not-first:pl-4 max-sm:gap-[5px] max-sm:not-first:pl-2">
-            <span className="grid size-[39px] shrink-0 place-items-center rounded-[10px] bg-background text-[23px] text-brand max-sm:hidden">
-              ▱
-            </span>
-            <div>
-              <strong className="block text-2xl leading-[1.2] font-semibold tracking-[-0.7px] max-sm:text-[22px]">
-                {fleet.loading
-                  ? "—"
-                  : new Set(fleet.bookings.map((b) => b.vehicleId)).size}
-              </strong>
-              <span className="mt-[5px] block text-[11px] text-text-secondary max-sm:text-[9px]">
-                Vehicles on the board
-              </span>
-            </div>
-          </div>
-          <div className="flex items-center gap-3.5 border-border not-first:border-l not-first:pl-6 max-xl:not-first:pl-4 max-sm:gap-[5px] max-sm:not-first:pl-2">
-            <span className="grid size-[39px] shrink-0 place-items-center rounded-[10px] bg-background text-[23px] text-brand max-sm:hidden">
-              ◷
-            </span>
-            <div>
-              <strong className="block text-2xl leading-[1.2] font-semibold tracking-[-0.7px] max-sm:text-[22px]">
-                {fleet.loading
-                  ? "—"
-                  : `${(totalMinutes / 60).toLocaleString("en-US", { maximumFractionDigits: 1 })} hrs`}
-              </strong>
-              <span className="mt-[5px] block text-[11px] text-text-secondary max-sm:text-[9px]">
-                Planned operation time
-              </span>
-            </div>
-          </div>
-          <div className="flex items-center gap-[7px] border-l border-border pl-6 text-[11px] text-text-secondary max-xl:pl-4 max-lg:hidden">
-            <span className={statusDot} /> No overlapping operations
-          </div>
-        </div>
-        <ScheduleToolbar
-          filters={fleet.filters}
-          onChange={fleet.setFilters}
-          vehicles={fleet.vehicles}
-        />
-        <div className="mt-9 mb-6 flex items-center justify-between max-sm:mt-7 max-sm:mb-5 max-sm:flex-col max-sm:items-start max-sm:gap-[7px]">
-          <div>
-            <span className={eyebrow}>DAILY SCHEDULE</span>
-            <h2 className="mt-1.5 text-[19px] font-medium tracking-[-0.4px] max-sm:text-[17px]">
-              {fleet.filters.date
-                ? dateLabel(fleet.filters.date)
-                : "Loading schedule…"}
-            </h2>
-          </div>
-          <span className="text-[11px] text-text-secondary">
-            Local time · 30-minute intervals
+          ))}
+          <span className="ml-auto inline-flex items-center gap-2 text-xs text-brand max-lg:hidden">
+            <ClockIcon size={17} aria-hidden="true" />
+            Working hours{" "}
+            <span className="font-semibold tabular-nums">09:00 – 17:00</span>
           </span>
         </div>
         {fleet.notice && (
           <div
-            className="mb-[18px] flex items-center justify-between rounded-lg border border-success-border bg-success-surface px-3.5 py-2.5 text-xs leading-normal text-brand"
             role="status"
+            className="mb-5 flex items-center gap-3 rounded-xl border border-success-border bg-success-surface py-2 pr-2 pl-4 text-sm text-brand"
           >
-            {fleet.notice}
+            <CheckCircleIcon size={20} weight="fill" aria-hidden="true" />
+            <span className="flex-1">{fleet.notice}</span>
             <button
-              className={`${buttonStyles} bg-transparent text-xl leading-normal`}
+              className={iconButton}
               aria-label="Dismiss notification"
               onClick={() => fleet.setNotice("")}
             >
-              ×
+              <XIcon size={18} aria-hidden="true" />
             </button>
           </div>
         )}
-        {fleet.loading ? (
-          <div
-            className={`${emptyPanel} flex items-center justify-center gap-3`}
-            role="status"
-          >
-            <span className="size-[17px] shrink-0 animate-spin rounded-full border-2 border-border border-t-brand [animation-duration:800ms] motion-reduce:animate-none" />
-            Loading your fleet schedule…
+        <section
+          id="schedule"
+          aria-label="Daily schedule"
+          className="overflow-hidden rounded-2xl border border-border bg-surface shadow-card"
+        >
+          <div className="flex flex-wrap items-center justify-between gap-4 px-6 pt-6 pb-5 max-sm:px-4">
+            <div>
+              <p className="mb-1 text-xs font-medium text-text-primary/65">
+                Daily schedule
+              </p>
+              <h2 className="text-xl font-semibold tracking-tight max-sm:text-lg">
+                {fleet.filters.date
+                  ? dateLabel(fleet.filters.date)
+                  : "Preparing your schedule"}
+              </h2>
+            </div>
+            <div className="flex items-center gap-1 max-sm:w-full">
+              <button
+                className={iconButton}
+                disabled={
+                  !fleet.filters.date || !shiftDate(fleet.filters.date, -1)
+                }
+                aria-label="Previous day"
+                onClick={() =>
+                  fleet.setFilters({
+                    ...fleet.filters,
+                    date: shiftDate(fleet.filters.date, -1),
+                  })
+                }
+              >
+                <CaretLeftIcon size={18} aria-hidden="true" />
+              </button>
+              <button
+                className={`${buttonStyles} min-h-11 rounded-lg px-3 text-sm font-medium enabled:hover:bg-background`}
+                onClick={() =>
+                  fleet.setFilters({ ...fleet.filters, date: localDate() })
+                }
+              >
+                Today
+              </button>
+              <button
+                className={iconButton}
+                disabled={
+                  !fleet.filters.date || !shiftDate(fleet.filters.date, 1)
+                }
+                aria-label="Next day"
+                onClick={() =>
+                  fleet.setFilters({
+                    ...fleet.filters,
+                    date: shiftDate(fleet.filters.date, 1),
+                  })
+                }
+              >
+                <CaretRightIcon size={18} aria-hidden="true" />
+              </button>
+              <span className="mx-2 h-5 w-px bg-border" aria-hidden="true" />
+              <button
+                className={iconButton}
+                disabled={fleet.loading}
+                onClick={fleet.refresh}
+                aria-label="Refresh schedule"
+                title="Refresh schedule"
+              >
+                {fleet.loading ? (
+                  <Spinner className="size-[18px]" />
+                ) : (
+                  <ArrowClockwiseIcon size={18} aria-hidden="true" />
+                )}
+              </button>
+              <span className="ml-auto hidden text-xs text-text-primary/65 max-sm:block">
+                Local time
+              </span>
+            </div>
           </div>
-        ) : fleet.error ? (
-          <div className={emptyPanel} role="alert">
-            <p>{fleet.error}</p>
-            <button
-              className={`${secondaryButton} mt-3.5`}
-              onClick={fleet.refresh}
-            >
-              Try again
-            </button>
-          </div>
-        ) : (
-          <ScheduleBoard
+          <ScheduleToolbar
+            filters={fleet.filters}
+            onChange={fleet.setFilters}
             vehicles={fleet.vehicles}
-            bookings={fleet.bookings}
-            onEdit={(booking) => setDialog({ booking })}
-            onDelete={fleet.remove}
           />
-        )}
-        <footer className="mt-12 flex justify-between gap-4 border-t border-border pt-[18px] text-[10px] text-text-secondary max-sm:flex-col max-sm:gap-[7px]">
+          <div aria-busy={fleet.loading}>
+            {fleet.loading ? (
+              <ScheduleSkeleton />
+            ) : fleet.error ? (
+              <div role="alert" className="px-6 py-16 text-center">
+                <WarningCircleIcon
+                  size={32}
+                  className="mx-auto mb-4 text-error"
+                  aria-hidden="true"
+                />
+                <h3 className="text-lg font-semibold">
+                  We couldn’t load your schedule
+                </h3>
+                <p className="mt-2 text-sm text-text-primary/70">
+                  {fleet.error}
+                </p>
+                <button
+                  className={`${secondaryButton} mt-5`}
+                  onClick={fleet.refresh}
+                >
+                  <ArrowClockwiseIcon size={17} aria-hidden="true" />
+                  Try again
+                </button>
+              </div>
+            ) : (
+              <ScheduleBoard
+                vehicles={fleet.vehicles}
+                bookings={fleet.bookings}
+                onEdit={(booking) => setDialog({ booking })}
+                onDelete={setDeleting}
+                onCreate={() => setDialog({})}
+                filtered={filtered}
+                onReset={resetFilters}
+              />
+            )}
+          </div>
+          <div className="flex flex-wrap justify-between gap-2 border-t border-border bg-background/60 px-6 py-3 text-[11px] text-text-primary/65 max-sm:px-4">
+            <span>All times are local · 30-minute intervals</span>
+            <span>{filtered ? "Filtered view" : "Grouped by vehicle"}</span>
+          </div>
+        </section>
+        <footer className="mt-6 flex flex-wrap justify-between gap-2 text-xs text-text-primary/60">
           <span>
-            FleetSlot <span className="mx-[7px] text-muted-divider"> / </span>{" "}
-            Less downtime. More road time.
+            FleetSlot <span className="mx-2 text-muted-divider">/</span> Less
+            downtime. More road time.
           </span>
-          <span>Fictional demo data · Changes reset on server restart</span>
+          <span>Demo data · Changes reset on server restart</span>
         </footer>
       </main>
       {dialog && (
@@ -171,6 +275,14 @@ export function FleetScheduler() {
           onClose={() => setDialog(null)}
         />
       )}
-    </>
+      {deleting && (
+        <DeleteBookingDialog
+          booking={deleting}
+          vehicle={fleet.vehicles.find((v) => v.id === deleting.vehicleId)}
+          onDelete={fleet.remove}
+          onClose={() => setDeleting(null)}
+        />
+      )}
+    </div>
   );
 }

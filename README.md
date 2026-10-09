@@ -37,6 +37,10 @@ All original color token names and values are preserved in `@theme static`. Use 
 
 **API integration is implemented.** `frontend/src/lib/api.ts` calls the real NestJS REST endpoints through the same-origin `/api` proxy in `frontend/next.config.ts`. `useFleetScheduler` loads vehicles/bookings and performs create, update, and delete requests. `useAvailability` fetches current windows, including edit exclusion; authoritative 409 responses drive selectable conflict alternatives in the dialog. Backend storage remains in memory and resets on restart.
 
+The redesigned workspace groups compact operation rows by vehicle, with previous/next-day controls, a Today shortcut, refresh, and clearable filters. DM Sans is served locally through `next/font/local` from the installed Fontsource package. Phosphor provides the interface icons. Both additions build without a runtime font or icon CDN.
+
+Board and availability requests display skeletons; saves and deletions show progress and block duplicate submissions. The shared native dialog locks background scrolling, wraps keyboard focus, and restores focus on dismissal. Deletion requires a separate confirmation showing the operation, vehicle, date, and time, with initial focus on **Keep operation** and an inline retryable error if the request fails. Scheduling dialogs keep their header and actions visible while the form body scrolls. Motion respects the system reduced-motion setting.
+
 ## Swagger / OpenAPI
 
 The repository-root [`swagger.yaml`](swagger.yaml) is an OpenAPI 3.0 document generated from the NestJS controllers and DTOs. Start the backend with `npm run dev`; on either the API port (3001) or frontend port (3000), use:

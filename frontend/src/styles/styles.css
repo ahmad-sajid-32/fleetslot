@@ -46,6 +46,7 @@
 
 /* Semantic utilities backed by the retained layout and shadow tokens. */
 @theme inline {
+  --font-interface: var(--font-dm-sans), var(--font-sans);
   --container-workspace: var(--layout-width);
   --radius-panel: var(--radius);
   --shadow-card: var(--shadow);

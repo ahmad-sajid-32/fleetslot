@@ -1,3 +1,4 @@
+import { CheckCircleIcon } from "@phosphor-icons/react";
 import { buttonStyles } from "@/lib/styles";
 import type { AvailabilitySlot } from "@/types";
 export function SlotPicker({
@@ -21,19 +22,22 @@ export function SlotPicker({
           key={s.startTime}
           disabled={!s.available}
           aria-pressed={value === s.startTime}
-          className={`${buttonStyles} flex flex-col items-center rounded-[7px] border border-border bg-surface px-[5px] py-2 text-xs leading-normal text-text-primary aria-pressed:border-brand aria-pressed:bg-selected aria-pressed:text-brand aria-pressed:ring-1 aria-pressed:ring-brand disabled:bg-background`}
+          className={`${buttonStyles} flex min-h-[62px] flex-col items-center justify-center gap-1 rounded-lg border border-border bg-surface px-1 py-2 text-xs tabular-nums text-text-primary enabled:hover:border-brand aria-pressed:border-brand aria-pressed:bg-selected aria-pressed:text-brand aria-pressed:ring-1 aria-pressed:ring-brand disabled:bg-background`}
           onClick={() => onChange(s.startTime)}
         >
-          <span>
+          <span className="font-medium">
             {s.startTime} – {s.endTime}
           </span>
-          <small className="mt-[3px] text-[9px] text-text-secondary">
+          <span className="flex items-center gap-1 text-[10px]">
+            {s.available && value === s.startTime && (
+              <CheckCircleIcon size={12} weight="fill" aria-hidden="true" />
+            )}
             {!s.available
               ? "Unavailable"
               : value === s.startTime
                 ? "Selected"
                 : "Available"}
-          </small>
+          </span>
         </button>
       ))}
     </div>

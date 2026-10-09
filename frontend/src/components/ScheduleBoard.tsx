@@ -1,4 +1,9 @@
-import { emptyPanel } from "@/lib/styles";
+import {
+  CalendarBlankIcon,
+  PlusIcon,
+  FunnelSimpleXIcon,
+} from "@phosphor-icons/react";
+import { emptyPanel, primaryButton, secondaryButton } from "@/lib/styles";
 import { VehicleSchedule } from "./VehicleSchedule";
 import type { Vehicle, Booking } from "@/types";
 export function ScheduleBoard({
@@ -6,26 +11,55 @@ export function ScheduleBoard({
   bookings,
   onEdit,
   onDelete,
+  onCreate,
+  filtered,
+  onReset,
 }: {
   vehicles: Vehicle[];
   bookings: Booking[];
   onEdit: (b: Booking) => void;
-  onDelete: (id: string) => Promise<void>;
+  onDelete: (b: Booking) => void;
+  onCreate: () => void;
+  filtered: boolean;
+  onReset: () => void;
 }) {
   if (!bookings.length)
     return (
       <div className={emptyPanel}>
-        <span className="mb-3 block text-[40px] text-brand" aria-hidden="true">
-          ▤
-        </span>
-        <h2 className="mb-2 text-[17px] font-medium text-text-primary">
-          No operations scheduled for this date.
+        <div className="mx-auto mb-5 grid size-16 place-items-center rounded-2xl bg-selected text-brand">
+          <CalendarBlankIcon size={30} aria-hidden="true" />
+        </div>
+        <h2 className="mb-2 text-xl font-semibold tracking-tight text-text-primary">
+          {filtered
+            ? "No matching operations"
+            : "A little room in the schedule."}
         </h2>
-        <p>Choose another date or schedule your next vehicle operation.</p>
+        <p className="mx-auto max-w-sm text-sm leading-relaxed text-text-primary/70">
+          {filtered
+            ? "Try another vehicle or operation type, or clear your filters to see the full day."
+            : "No operations scheduled for this date. Add a handoff, inspection, or service to get things moving."}
+        </p>
+        <div className="mt-6">
+          {filtered ? (
+            <button className={secondaryButton} onClick={onReset}>
+              <FunnelSimpleXIcon size={18} aria-hidden="true" />
+              Clear filters
+            </button>
+          ) : (
+            <button
+              className={primaryButton}
+              disabled={!vehicles.some((v) => v.active)}
+              onClick={onCreate}
+            >
+              <PlusIcon size={18} aria-hidden="true" />
+              Schedule an operation
+            </button>
+          )}
+        </div>
       </div>
     );
   return (
-    <div className="flex flex-col gap-7">
+    <div>
       {vehicles
         .filter((v) => bookings.some((b) => b.vehicleId === v.id))
         .map((v) => (

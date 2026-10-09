@@ -64,6 +64,16 @@ flowchart TD
 - Responsive thresholds retain the original 640/1000/1360px layout design. Operation color maps contain complete utility names for reliable build-time detection.
 - API functions, hooks, validation, and scheduling behavior are unchanged by the styling migration.
 
+## Interface redesign
+
+The owner requested a redesign using the installed `Leonxlnx/taste-skill` collection. The applicable `redesign-existing-projects` skill guided an audit and targeted upgrades to the existing Next.js/Tailwind interface. The marketing-focused `design-taste-frontend` skill explicitly excludes dashboards, so its landing-page patterns were not applied here.
+
+- Audit findings: sparse card columns made vehicle schedules unnecessarily tall; text glyphs were inconsistent across platforms; small card actions were difficult to target; inline deletion confirmation lacked context; request feedback was limited to a spinner or text.
+- Design direction: a light operations workspace with compact rows grouped by vehicle, a restrained metric strip, legible local DM Sans typography, tabular time values, and consistent Phosphor icons. The FleetSlot wordmark and all existing color token names and values remain intact.
+- Functional improvements: previous/next-day navigation, Today and refresh controls, clearable filters, useful empty/error states, board and availability skeletons, and explicit save/delete progress. No API contracts or backend scheduling rules changed.
+- Shared native dialogs make the background inert and prevent background scrolling. Explicit Tab/Shift+Tab wrapping, focus restoration, reduced motion, independent form scrolling, and disabled pending controls support keyboard and mobile use.
+- Deletion is managed above the schedule board so a board refresh cannot destroy its pending/error state. Confirmation includes the exact record details, defaults focus to cancellation, ignores backdrop clicks, and keeps failures open for retry. Successful deletion returns focus to the stable scheduling action.
+
 ## Remaining constraints
 
 In-memory state and single-process atomicity are intentional. Local dates assume compatible operator/server local timezones. Environment publication, cross-task snapshot restoration, and deployment are outside the checks performed here.

@@ -1,8 +1,14 @@
 "use client";
-import { buttonStyles, eyebrow } from "@/lib/styles";
-import { useEffect, useRef, useState } from "react";
+import {
+  CalendarPlusIcon,
+  PencilSimpleIcon,
+  XIcon,
+} from "@phosphor-icons/react";
+import { iconButton } from "@/lib/styles";
+import { useState } from "react";
 import type { Booking, Vehicle, CreateBookingInput } from "@/types";
 import { BookingForm } from "./BookingForm";
+import { Modal } from "./Modal";
 export function BookingDialog({
   booking,
   vehicles,
@@ -16,55 +22,40 @@ export function BookingDialog({
   onSave: (input: CreateBookingInput, id?: string) => Promise<void>;
   onClose: () => void;
 }) {
-  const ref = useRef<HTMLDialogElement>(null),
-    [busy, setBusy] = useState(false);
-  useEffect(() => {
-    const dialog = ref.current;
-    dialog?.showModal();
-    return () => dialog?.close();
-  }, []);
+  const [busy, setBusy] = useState(false);
+  const Icon = booking ? PencilSimpleIcon : CalendarPlusIcon;
   return (
-    <dialog
-      ref={ref}
-      className="m-auto max-h-[calc(100dvh-60px)] w-[760px] max-w-[calc(100vw-40px)] overflow-auto rounded-2xl border border-border bg-surface p-0 text-text-primary shadow-modal backdrop:bg-backdrop backdrop:backdrop-blur-[3px] max-sm:max-h-[calc(100dvh-12px)] max-sm:w-full max-sm:max-w-[calc(100vw-12px)] max-sm:rounded-panel"
-      aria-labelledby="dialog-title"
-      onCancel={(e) => {
-        e.preventDefault();
-        if (!busy) onClose();
-      }}
-      onClick={(e) => {
-        if (e.target === ref.current && !busy) {
-          const rect = ref.current.getBoundingClientRect();
-          if (
-            e.clientX < rect.left ||
-            e.clientX > rect.right ||
-            e.clientY < rect.top ||
-            e.clientY > rect.bottom
-          )
-            onClose();
-        }
-      }}
+    <Modal
+      labelledBy="dialog-title"
+      describedBy="dialog-description"
+      busy={busy}
+      onClose={onClose}
     >
-      <div className="flex justify-between border-b border-border px-7 pt-[25px] pb-5 max-sm:px-[18px] max-sm:pt-5">
-        <div>
-          <span className={eyebrow}>VEHICLE OPERATIONS</span>
+      <div className="flex shrink-0 items-start gap-3 border-b border-border p-6 max-sm:p-5">
+        <span className="grid size-11 shrink-0 place-items-center rounded-xl bg-selected text-brand max-sm:hidden">
+          <Icon size={23} aria-hidden="true" />
+        </span>
+        <div className="flex-1">
           <h2
             id="dialog-title"
-            className="my-[5px] text-[25px] tracking-[-0.7px] max-sm:text-[22px]"
+            className="text-2xl font-semibold tracking-tight max-sm:text-xl"
           >
             {booking ? "Edit operation" : "Schedule an operation"}
           </h2>
-          <p className="text-xs leading-normal text-text-secondary">
-            Find the right window. Keep your fleet moving.
+          <p
+            id="dialog-description"
+            className="mt-1 text-sm text-text-primary/65"
+          >
+            Choose a vehicle and an available time window.
           </p>
         </div>
         <button
           aria-label="Close dialog"
-          className={`${buttonStyles} size-8 shrink-0 rounded-full bg-background text-[22px] text-text-secondary`}
+          className={iconButton}
           disabled={busy}
           onClick={onClose}
         >
-          ×
+          <XIcon size={20} aria-hidden="true" />
         </button>
       </div>
       <BookingForm
@@ -75,6 +66,6 @@ export function BookingDialog({
         onClose={onClose}
         onBusy={setBusy}
       />
-    </dialog>
+    </Modal>
   );
 }

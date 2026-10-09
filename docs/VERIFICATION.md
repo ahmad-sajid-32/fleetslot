@@ -93,6 +93,21 @@ Verified on October 9, 2026 with Tailwind CSS and `@tailwindcss/postcss` 4.3.3:
 - Real API create, edit, delete, and stale-availability conflict recovery passed through the frontend proxy. The browser observed successful GET/POST/PATCH/DELETE requests and a 409 response with three selectable alternatives. No browser runtime exceptions occurred. Temporary bookings were deleted.
 - Development checks used the `localhost` hostname. Next.js blocks development resources requested from the unconfigured `127.0.0.1` origin; production checks passed on that address.
 
+## Interface redesign
+
+Verified on October 9, 2026 using Chromium against both development and production builds:
+
+- All existing color token names and values are unchanged. The locally served DM Sans font, Phosphor icons, compact vehicle groups, and desktop/mobile dialogs were visually inspected.
+- Delayed API responses exposed board and availability skeletons. Reduced-motion emulation disabled their animations. Save/delete controls showed pending states and blocked repeat submission and dismissal during requests.
+- Previous/next-day navigation, Today, refresh, vehicle/type filters, filter clearing, filtered empty states, and unfiltered empty states passed. Date helper checks covered leap days, year rollover, and minimum/maximum supported years.
+- Simulated failures of schedule loading, availability, and deletion displayed actionable errors and recovered on retry. A failed deletion kept the confirmation dialog open and retained the operation.
+- Delete confirmation displayed the operation, vehicle, date, and time; initially focused Keep operation; wrapped Tab/Shift+Tab; ignored backdrop clicks; and issued no DELETE request on cancellation or Escape. Cancellation restored the trigger; successful deletion returned focus to the scheduling action.
+- Real API create, edit, delete, and a deliberately stale availability conflict passed. Three alternatives appeared after HTTP 409, and selecting one required explicit resubmission. Temporary records were removed afterward.
+- At 768px, 390px, and 320px, the page, operation rows, and dialogs had no horizontal overflow. The scheduling header/actions remained visible while its body scrolled; focused title fields remained above the footer.
+- Production build and both workspace type checks passed. Browser runs recorded no runtime exceptions. Verification scripts and screenshots remain outside the checkout.
+
+Browser checks identified and corrected native-dialog Tab wrapping, narrow operation-row overflow, and form scrolling that could place a focused field under the action bar.
+
 ## Verification limits
 
 No production deployment, environment publication, fresh-task snapshot restoration, cross-timezone behavior, or multi-process concurrency was verified. Persistence, authentication, calendar sync, and notifications are intentionally outside scope. Headless browser checks do not replace exhaustive accessibility or cross-browser audits.
